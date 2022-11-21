@@ -1,6 +1,10 @@
 package Assistant;
 
 
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import star.amr.AmrModel;
 import star.base.neo.DoubleVector;
 import star.base.neo.NeoObjectVector;
@@ -952,35 +956,27 @@ public class simpleComplex extends StarMacro {
 
     }
 
-    private int getColumnsGeometryNumber(String pythonFilePath, String columnsNumberFilePath, String exclelPath)
+    private int getColumnsGeometryNumber(String exclelPath)
             throws IOException, InterruptedException {
+        try {
+            FileInputStream file = new FileInputStream(new File(exclelPath));
+            Workbook workbook = new XSSFWorkbook(file);
 
-        ProcessBuilder builder = new ProcessBuilder("python",
-                pythonFilePath,
-                columnsNumberFilePath,
-                exclelPath);
-        Process process = builder.start();
+            Sheet sheet = workbook.getSheetAt(0);
 
-        TimeUnit.SECONDS.sleep(1);
-
-        File file = new File(columnsNumberFilePath);
-        Scanner scanner = new Scanner(file);
-
-        String fileContent = "";
-
-        while(scanner.hasNext()){
-            fileContent = fileContent.concat(scanner.nextLine());
+            return sheet.getPhysicalNumberOfRows()+1;
         }
-
-        return Integer.parseInt(fileContent);
+        catch(Exception exp){
+            return 0;
+        }
     }
 
-    private void changeGeometry(String geometryPath, String excelPath,int rowNumber) throws InterruptedException, IOException {
+    private void changeGeometry(String geometryPath, String excelPath,int rowNumber,String pyScriptPath) throws InterruptedException, IOException {
 
         //Runtime.getRuntime().exec("cmd /c start cmd.exe /K python C:\\Users\\NULS\\PycharmProjects\\compasWork\\geom.py"+" "+geometryPath+" " + excelPath+" " + Integer.toString(rowNumber));
 
         ProcessBuilder builder = new ProcessBuilder("python",
-                "C:\\Users\\NULS\\Desktop\\folder\\geom.py",
+                pyScriptPath,
                 geometryPath,
                 excelPath,
                 Integer.toString(rowNumber));
@@ -1067,21 +1063,19 @@ public class simpleComplex extends StarMacro {
                 int columnNumber = 0;
                 try {
                     //метод
-                    columnNumber = getColumnsGeometryNumber(
-                            "C:\\Users\\NULS\\Desktop\\folder\\checkRowsNumbver.py",
-                            "C:\\Users\\NULS\\Desktop\\folder\\columsNumber.txt",
-                            lbExcel.getText());
+                    columnNumber = getColumnsGeometryNumber(lbExcel.getText());
                 } catch (IOException | InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
-                for(int i = 2; i < columnNumber;i++){
-                    try {
-                        //метод
-                        changeGeometry(lbGeometry.getText(),lbExcel.getText(),i);
-                    } catch (InterruptedException | IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
+                
+                 for(int i = 2; i < columnNumber;i++){
+                     try {
+                         //метод
+                         changeGeometry(lbGeometry.getText(),lbExcel.getText(),i,"C:\\Users\\NULS\\Desktop\\folder\\geom.py");
+                     } catch (InterruptedException | IOException ex) {
+                         throw new RuntimeException(ex);
+                     }
+                 }
 
                 // методы работы в Star CCM+
 //                importGeometry();
