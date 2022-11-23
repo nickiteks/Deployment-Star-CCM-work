@@ -87,5 +87,5 @@ iDocument3D.RebuildDocument()
 savePath = kompas_document.PathName[:-4]
 print(savePath)
 
-kompas_document.SaveAs(savePath + '.m3d')
+kompas_document.SaveAs(savePath + '.stp')
 kompas_document.Close(True)

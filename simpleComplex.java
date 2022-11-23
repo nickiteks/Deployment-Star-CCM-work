@@ -44,6 +44,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.Scanner;
+import java.util.Properties;
 
 
 import java.io.File;
@@ -52,7 +53,11 @@ import java.util.concurrent.TimeUnit;
 
 public class simpleComplex extends StarMacro {
 
+private static  String PYTHON_SCRIPT_PATH;
+
     public void execute() {
+
+        getConfigData("C:\\Users\\NULS\\Desktop\\folder\\config.ini");
         formChoose();
     }
 
@@ -62,17 +67,17 @@ public class simpleComplex extends StarMacro {
                 getActiveSimulation();
 
         //open a file chooser
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Select a folder");
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        String resultPath;
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            resultPath = fileChooser.getSelectedFile().getPath();
-            simulation.println(resultPath);
-        } else {
-            simulation.println("Select the geometry file");
-            return;
-        }
+        // JFileChooser fileChooser = new JFileChooser();
+        // fileChooser.setDialogTitle("Select a folder");
+        // fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        // String resultPath;
+        // if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        //     resultPath = fileChooser.getSelectedFile().getPath();
+        //     simulation.println(resultPath);
+        // } else {
+        //     simulation.println("Select the geometry file");
+        //     return;
+        // }
 
         CadModel cadModel =
                 simulation.get(SolidModelManager.class).createSolidModel();
@@ -80,7 +85,7 @@ public class simpleComplex extends StarMacro {
         cadModel.resetSystemOptions();
 
         ImportCadFileFeature importCadFileFeature =
-                cadModel.importCadFile(resolvePath("D:\\Projects\\Physics\\Labs\\Materials to work\\burner\\flow v 5.stp"), true, false, false, false, false, false, false, true, false, true, NeoProperty.fromString("{\'CGR\': 0, \'IFC\': 0, \'STEP\': 0, \'NX\': 0, \'CATIAV5\': 0, \'SE\': 0, \'JT\': 0}"), false);
+                cadModel.importCadFile(resolvePath("C:\\Users\\NULS\\Desktop\\folder\\model.stp"), true, false, false, false, false, false, false, true, false, true, NeoProperty.fromString("{\'CGR\': 0, \'IFC\': 0, \'STEP\': 0, \'NX\': 0, \'CATIAV5\': 0, \'SE\': 0, \'JT\': 0}"), false);
 //        ImportCadFileFeature importCadFileFeature =
 //            cadModel.importCadFile(resolvePath(resultPath), true, false, false, false, false, false, false, true, false, true, NeoProperty.fromString("{\'CGR\': 0, \'IFC\': 0, \'STEP\': 0, \'NX\': 0, \'CATIAV5\': 0, \'SE\': 0, \'JT\': 0}"), false);
 
@@ -119,10 +124,10 @@ public class simpleComplex extends StarMacro {
 
         cadmodelerBody_0.getUnNamedFacesDefaultAttributeName();
 
-        NamedFaces namedFaces_0 =
-                ((NamedFaces) cadmodelerBody_0.getNamedFacesManager().getObject("ColoredFace1"));
+        // NamedFaces namedFaces_0 =
+        //         ((NamedFaces) cadmodelerBody_0.getNamedFacesManager().getObject("ColoredFace1"));
 
-        cadmodelerBody_0.getNamedFacesManager().delete(new NeoObjectVector(new Object[]{namedFaces_0}));
+        // cadmodelerBody_0.getNamedFacesManager().delete(new NeoObjectVector(new Object[]{namedFaces_0}));
 
         simulation.get(SolidModelManager.class).endEditCadModel(cadModel);
 
@@ -984,6 +989,18 @@ public class simpleComplex extends StarMacro {
         process.waitFor();
     }
 
+    private void getConfigData(String configPath){
+        Properties props = new Properties();
+
+        try {
+                props.load(new FileInputStream(new File(configPath)));
+        } catch (IOException ex) {
+                throw new RuntimeException(ex);
+        }
+
+        PYTHON_SCRIPT_PATH = props.getProperty("PYTHON_SCRIPT_PATH");
+    }
+
     private void formChoose(){
 
         JFrame frame = new JFrame();
@@ -1059,7 +1076,7 @@ public class simpleComplex extends StarMacro {
             public void actionPerformed(ActionEvent e) {
 
                 frame.dispose();
-
+                //количество строк в ексель файле
                 int columnNumber = 0;
                 try {
                     //метод
@@ -1067,14 +1084,18 @@ public class simpleComplex extends StarMacro {
                 } catch (IOException | InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
-                
+
+                // основной цикл работы
                  for(int i = 2; i < columnNumber;i++){
                      try {
                          //метод
-                         changeGeometry(lbGeometry.getText(),lbExcel.getText(),i,"C:\\Users\\NULS\\Desktop\\folder\\geom.py");
+                         changeGeometry(lbGeometry.getText(),lbExcel.getText(),i,PYTHON_SCRIPT_PATH);
                      } catch (InterruptedException | IOException ex) {
                          throw new RuntimeException(ex);
                      }
+
+                      importGeometry();
+
                  }
 
                 // методы работы в Star CCM+
