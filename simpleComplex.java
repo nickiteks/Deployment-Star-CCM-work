@@ -54,6 +54,11 @@ import java.util.concurrent.TimeUnit;
 public class simpleComplex extends StarMacro {
 
 private static  String PYTHON_SCRIPT_PATH;
+private static  String GRIMECH30_PATH;
+private static  String THERMO30_PATH;
+private static  String TRANSPORT_PATH;
+private static int EXCEL_START_ROW;
+private static int EXCEL_START_COLL;
 
     public void execute() {
 
@@ -608,7 +613,7 @@ private static  String PYTHON_SCRIPT_PATH;
         TableChemistryDefinition tableChemistryDefinition_0 =
                 ((TableChemistryDefinition) fgmTableGenerator.getTableChemistryDefinition());
 
-        tableChemistryDefinition_0.importCaseFromChemkin(resolvePath("D:\\Projects\\Physics\\Labs\\Materials to work\\For tables\\Training\\traningin\\Sanida\\grimech30.dat"), resolvePath("D:\\Projects\\Physics\\Labs\\Materials to work\\For tables\\Training\\traningin\\Sanida\\thermo30.dat"), resolvePath("D:\\Projects\\Physics\\Labs\\Materials to work\\For tables\\Training\\traningin\\Sanida\\transport.dat"), "", "");
+        tableChemistryDefinition_0.importCaseFromChemkin(resolvePath(GRIMECH30_PATH), resolvePath(THERMO30_PATH), resolvePath(TRANSPORT_PATH), "", "");
 
         TableFluidStreamCollection tableFluidStreamCollection_0 =
                 ((TableFluidStreamCollection) fgmTableGenerator.getTableFluidStreamCollection());
@@ -968,8 +973,22 @@ private static  String PYTHON_SCRIPT_PATH;
             Workbook workbook = new XSSFWorkbook(file);
 
             Sheet sheet = workbook.getSheetAt(0);
+        
+            int row  = EXCEL_START_ROW;
+            int coll = EXCEL_START_COLL;
+            int coll_number = 0;
 
-            return sheet.getPhysicalNumberOfRows()+1;
+            while(true) {
+                try{
+                    double value = sheet.getRow(row).getCell(coll).getNumericCellValue();
+                    row ++;
+                    coll_number++;
+                }
+                catch(Exception exp){
+                    return coll_number;
+                }
+
+            }
         }
         catch(Exception exp){
             return 0;
@@ -999,6 +1018,11 @@ private static  String PYTHON_SCRIPT_PATH;
         }
 
         PYTHON_SCRIPT_PATH = props.getProperty("PYTHON_SCRIPT_PATH");
+        GRIMECH30_PATH = props.getProperty("GRIMECH30_PATH");
+        THERMO30_PATH = props.getProperty("THERMO30_PATH");
+        TRANSPORT_PATH = props.getProperty("TRANSPORT_PATH");
+        EXCEL_START_ROW = Integer.valueOf(props.getProperty("EXCEL_START_ROW"));
+        EXCEL_START_COLL = Integer.valueOf(props.getProperty("EXCEL_START_COLL"));
     }
 
     private void formChoose(){
@@ -1085,35 +1109,74 @@ private static  String PYTHON_SCRIPT_PATH;
                     throw new RuntimeException(ex);
                 }
 
+                JOptionPane.showMessageDialog(
+                        null, Integer.toString(columnNumber)
+                );
                 // основной цикл работы
-                 for(int i = 2; i < columnNumber;i++){
-                     try {
-                         //метод
-                         changeGeometry(lbGeometry.getText(),lbExcel.getText(),i,PYTHON_SCRIPT_PATH);
-                     } catch (InterruptedException | IOException ex) {
-                         throw new RuntimeException(ex);
-                     }
+                 //for(int i = 0; i < coll_number;i++){
+                //      try {
+                //          //метод
+                //          changeGeometry(lbGeometry.getText(),lbExcel.getText(),i,PYTHON_SCRIPT_PATH);
+                //      } catch (InterruptedException | IOException ex) {
+                //          throw new RuntimeException(ex);
+                //      }
 
-                      importGeometry();
-
-                 }
+                      //importGeometry();
+                }
 
                 // методы работы в Star CCM+
-//                importGeometry();
-//                createCylinderParts();
-//                createVolumeMeshControl();
-//                createBoundaries();
-//                generateVolumeMesh();
-//                createPlaneSection();
-//                settingPhysicsContinuum();
-//                createFgmTable();
-//                createLinePart();
-//                settingPlaneSection();
-//                createPlot();
-//                setStoppingCriterion(7000);
-                JOptionPane.showMessageDialog(
-                        null, "Complete!"
-                );
+                
+        //        importGeometry();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "importGeometry!"
+        //         );
+        //        createCylinderParts();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createCylinderParts!"
+        //         );
+        //        createVolumeMeshControl();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createVolumeMeshControl!"
+        //         );
+        //        createBoundaries();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createBoundaries!"
+        //         );
+        //        generateVolumeMesh();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "generateVolumeMesh!"
+        //         );
+        //        createPlaneSection();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createPlaneSection!"
+        //         );
+        //        settingPhysicsContinuum();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "settingPhysicsContinuum!"
+        //         );
+        //        createFgmTable();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createFgmTable!"
+        //         );
+        //        createLinePart();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createLinePart!"
+        //         );
+        //        settingPlaneSection();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "settingPlaneSection!"
+        //         );
+        //        createPlot();
+        //        JOptionPane.showMessageDialog(
+        //                 null, "createPlot!"
+        //         );
+        //        setStoppingCriterion(7000);
+        //        JOptionPane.showMessageDialog(
+        //                 null, "setStoppingCriterion!"
+        //         );
+        //         JOptionPane.showMessageDialog(
+        //                 null, "Complete!"
+        //         );
             }
         });
 
