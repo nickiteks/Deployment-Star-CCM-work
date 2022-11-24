@@ -1,6 +1,7 @@
 package Assistant;
 
-
+import java.util.List;
+import java.util.ArrayList;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -966,6 +967,38 @@ private static int EXCEL_START_COLL;
 
     }
 
+    private int repeatGeometryCheck(int rowNumber,String exclelPath) throws IOException, InterruptedException{
+        
+            FileInputStream file = new FileInputStream(new File(exclelPath));
+            Workbook workbook = new XSSFWorkbook(file);
+
+            Sheet sheet = workbook.getSheetAt(0);
+        
+            int rowStart  = EXCEL_START_ROW;
+            int collStart = EXCEL_START_COLL;
+
+            List<Integer> numbersStart = new ArrayList<Integer>();
+
+            for(int i = collStart; i < collStart + 7; i++){
+                numbersStart.add((int)sheet.getRow(rowNumber).getCell(i).getNumericCellValue());
+            }
+
+            for(int i = rowNumber-1; i > rowStart;i--){
+
+                List<Integer> numbersCheck = new ArrayList<Integer>();
+
+                for(int j = collStart; j < collStart + 7; j++){
+                    numbersCheck.add((int)sheet.getRow(i).getCell(j).getNumericCellValue());
+                }
+
+                if (numbersStart.equals(numbersCheck)) {
+                    return i;
+                }
+            }
+
+            return 0;
+    }
+
     private int getColumnsGeometryNumber(String exclelPath)
             throws IOException, InterruptedException {
         try {
@@ -974,14 +1007,14 @@ private static int EXCEL_START_COLL;
 
             Sheet sheet = workbook.getSheetAt(0);
         
-            int row  = EXCEL_START_ROW;
-            int coll = EXCEL_START_COLL;
+            int rowStart  = EXCEL_START_ROW;
+            int collStart = EXCEL_START_COLL;
             int coll_number = 0;
 
             while(true) {
                 try{
-                    double value = sheet.getRow(row).getCell(coll).getNumericCellValue();
-                    row ++;
+                    double value = sheet.getRow(rowStart).getCell(collStart).getNumericCellValue();
+                    rowStart ++;
                     coll_number++;
                 }
                 catch(Exception exp){
@@ -995,7 +1028,7 @@ private static int EXCEL_START_COLL;
         }
     }
 
-    private void changeGeometry(String geometryPath, String excelPath,int rowNumber,String pyScriptPath) throws InterruptedException, IOException {
+    private void changeGeometry(String geometryPath, String excelPath,int rowNumber,int collNumber,String pyScriptPath) throws InterruptedException, IOException {
 
         //Runtime.getRuntime().exec("cmd /c start cmd.exe /K python C:\\Users\\NULS\\PycharmProjects\\compasWork\\geom.py"+" "+geometryPath+" " + excelPath+" " + Integer.toString(rowNumber));
 
@@ -1003,7 +1036,8 @@ private static int EXCEL_START_COLL;
                 pyScriptPath,
                 geometryPath,
                 excelPath,
-                Integer.toString(rowNumber));
+                Integer.toString(rowNumber),
+                Integer.toString(collNumber));
         Process process = builder.start();
         process.waitFor();
     }
@@ -1113,15 +1147,26 @@ private static int EXCEL_START_COLL;
                         null, Integer.toString(columnNumber)
                 );
                 // основной цикл работы
-                 //for(int i = 0; i < coll_number;i++){
+                 for(int i = 0; i < columnNumber;i++){
+                        try {
+                                int num = repeatGeometryCheck(EXCEL_START_ROW+i,lbExcel.getText());
+                                JOptionPane.showMessageDialog(
+                                        null, num+""
+                                );
+                        } 
+                        catch (IOException | InterruptedException ex) {
+                                throw new RuntimeException(ex);
+                        }
                 //      try {
                 //          //метод
-                //          changeGeometry(lbGeometry.getText(),lbExcel.getText(),i,PYTHON_SCRIPT_PATH);
+                //          changeGeometry(lbGeometry.getText(),
+                //                         lbExcel.getText(),
+                //                         EXCEL_START_ROW+i,
+                //                         EXCEL_START_COLL,
+                //                         PYTHON_SCRIPT_PATH);
                 //      } catch (InterruptedException | IOException ex) {
                 //          throw new RuntimeException(ex);
                 //      }
-
-                      //importGeometry();
                 }
 
                 // методы работы в Star CCM+
@@ -1174,9 +1219,9 @@ private static int EXCEL_START_COLL;
         //        JOptionPane.showMessageDialog(
         //                 null, "setStoppingCriterion!"
         //         );
-        //         JOptionPane.showMessageDialog(
-        //                 null, "Complete!"
-        //         );
+                JOptionPane.showMessageDialog(
+                        null, "Complete!"
+                );
             }
         });
 

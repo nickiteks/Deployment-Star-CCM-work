@@ -61,23 +61,16 @@ column = sheet_obj.max_column + 1
 
 values = []
 
-for i in range(1, column):
-    values.append(sheet_obj.cell(row=int(sys.argv[3]), column=i).value)
+for i in range(0, 7):
+    values.append(sheet_obj.cell(row=int(sys.argv[3])+1, column=int(sys.argv[4])+1+i).value)
 
 print(values)
 
-# кол-во внешних лопаток
-Variable = varcoll.GetByName('N1', True, True)
-Variable.value = values[0]
-# кол-во внутренних лопаток
-Variable = varcoll.GetByName('N2', True, True)
-Variable.value = values[1]
-# угол внутренних лопаток
-Variable = varcoll.GetByName('L1', True, True)
-Variable.value = values[2]
-# угол внешних лопаток
-Variable = varcoll.GetByName('a2', True, True)
-Variable.value = values[3]
+list_collms = ['N1','L1','N2','L2','a2','N3','L3']
+
+for i in range(len(values)):
+    Variable = varcoll.GetByName(list_collms[i], True, True)
+    Variable.value = values[i]
 
 # Перестраиваем модель
 kPart.RebuildModel()
@@ -87,5 +80,5 @@ iDocument3D.RebuildDocument()
 savePath = kompas_document.PathName[:-4]
 print(savePath)
 
-kompas_document.SaveAs(savePath + '.stp')
+kompas_document.SaveAs(savePath + f'{sys.argv[3]+1}.stp')
 kompas_document.Close(True)
