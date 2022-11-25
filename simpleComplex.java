@@ -957,7 +957,7 @@ private static int EXCEL_START_COLL;
         simulation.getSimulationIterator().run();
 
     }
-
+// сколько строк столько и файлов
     private void saveState() {
 
         Simulation simulation =
@@ -1059,6 +1059,26 @@ private static int EXCEL_START_COLL;
         EXCEL_START_COLL = Integer.valueOf(props.getProperty("EXCEL_START_COLL"));
     }
 
+//Вызываем если геометрия изменилась
+    private void isGeometryChange(int i){
+        try {
+                //методS
+                changeGeometry(lbGeometry.getText(),
+                        lbExcel.getText(),
+                        EXCEL_START_ROW+i,
+                        EXCEL_START_COLL,
+                        PYTHON_SCRIPT_PATH);
+        } catch (InterruptedException | IOException ex) {
+                throw new RuntimeException(ex);
+        }
+        //запустить новый процесс стар
+    }
+
+//Вызываем если геометрия не изменялась
+    private void isGeometryDontChange(){
+
+    }
+
     private void formChoose(){
 
         JFrame frame = new JFrame();
@@ -1137,8 +1157,9 @@ private static int EXCEL_START_COLL;
                 //количество строк в ексель файле
                 int columnNumber = 0;
                 try {
-                    //метод
+                    //метод подсчета строк
                     columnNumber = getColumnsGeometryNumber(lbExcel.getText());
+
                 } catch (IOException | InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -1146,79 +1167,56 @@ private static int EXCEL_START_COLL;
                 JOptionPane.showMessageDialog(
                         null, Integer.toString(columnNumber)
                 );
+
                 // основной цикл работы
-                 for(int i = 0; i < columnNumber;i++){
+                for(int i = 0; i < columnNumber;i++){
+                        int repeatRow = 0;
                         try {
-                                int num = repeatGeometryCheck(EXCEL_START_ROW+i,lbExcel.getText());
+                                // проверка на повторение геометрии
+                                repeatRow = repeatGeometryCheck(EXCEL_START_ROW+i,lbExcel.getText());
+
                                 JOptionPane.showMessageDialog(
-                                        null, num+""
+                                        null, repeatRow+""
                                 );
                         } 
                         catch (IOException | InterruptedException ex) {
                                 throw new RuntimeException(ex);
                         }
-                //      try {
-                //          //метод
-                //          changeGeometry(lbGeometry.getText(),
-                //                         lbExcel.getText(),
-                //                         EXCEL_START_ROW+i,
-                //                         EXCEL_START_COLL,
-                //                         PYTHON_SCRIPT_PATH);
-                //      } catch (InterruptedException | IOException ex) {
-                //          throw new RuntimeException(ex);
-                //      }
+
+                        if(repeatRow == 0){
+                           isGeometryChange()
+                        }
+                        else{
+                           isGeometryDontChange()
+                        }
                 }
 
                 // методы работы в Star CCM+
                 
         //        importGeometry();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "importGeometry!"
-        //         );
+
         //        createCylinderParts();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createCylinderParts!"
-        //         );
+
         //        createVolumeMeshControl();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createVolumeMeshControl!"
-        //         );
+
         //        createBoundaries();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createBoundaries!"
-        //         );
+
         //        generateVolumeMesh();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "generateVolumeMesh!"
-        //         );
+
         //        createPlaneSection();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createPlaneSection!"
-        //         );
+
         //        settingPhysicsContinuum();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "settingPhysicsContinuum!"
-        //         );
+
         //        createFgmTable();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createFgmTable!"
-        //         );
+
         //        createLinePart();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createLinePart!"
-        //         );
+ 
         //        settingPlaneSection();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "settingPlaneSection!"
-        //         );
+
         //        createPlot();
-        //        JOptionPane.showMessageDialog(
-        //                 null, "createPlot!"
-        //         );
+
         //        setStoppingCriterion(7000);
-        //        JOptionPane.showMessageDialog(
-        //                 null, "setStoppingCriterion!"
-        //         );
+
                 JOptionPane.showMessageDialog(
                         null, "Complete!"
                 );
