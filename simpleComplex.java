@@ -1,5 +1,8 @@
 package Assistant;
 
+
+import star.common.*;
+import star.base.neo.*;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.commons.io.IOUtils;
@@ -963,7 +966,7 @@ private static int EXCEL_START_COLL;
         Simulation simulation =
                 getActiveSimulation();
 
-        simulation.saveState("D:\\Projects\\Physics\\Labs\\Materials to work\\burner\\b_5_5.sim");
+        simulation.saveState("C:\\Users\\NULS\\Desktop\\xhtym\\workb_5_5.sim");
 
     }
 
@@ -1061,21 +1064,23 @@ private static int EXCEL_START_COLL;
 
 //Вызываем если геометрия изменилась
     private void isGeometryChange(int i){
-        try {
-                //методS
-                changeGeometry(lbGeometry.getText(),
-                        lbExcel.getText(),
-                        EXCEL_START_ROW+i,
-                        EXCEL_START_COLL,
-                        PYTHON_SCRIPT_PATH);
-        } catch (InterruptedException | IOException ex) {
-                throw new RuntimeException(ex);
-        }
-        //запустить новый процесс стар
+        // // перестраивание геометрии в компас
+        // try {
+        //         //методS
+        //         changeGeometry(lbGeometry.getText(),
+        //                 lbExcel.getText(),
+        //                 EXCEL_START_ROW+i,
+        //                 EXCEL_START_COLL,
+        //                 PYTHON_SCRIPT_PATH);
+        // } catch (InterruptedException | IOException ex) {
+        //         throw new RuntimeException(ex);
+        // }
+        // //запустить новый процесс стар
     }
 
 //Вызываем если геометрия не изменялась
     private void isGeometryDontChange(){
+
 
     }
 
@@ -1154,42 +1159,57 @@ private static int EXCEL_START_COLL;
             public void actionPerformed(ActionEvent e) {
 
                 frame.dispose();
+
+                // Simulation sim = getActiveSimulation();
+                // sim = new Simulation("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
+
+                //star.coremodule.OpenFile.open("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
+                
+                //Simulation sim=getActiveSimulation();
+
+                Simulation sim = new Simulation("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
+                
+                //sim.close(ServerConnection.CloseOption.Close);
+
+                //star.coremodule.OpenFile.open("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
+                
+                
                 //количество строк в ексель файле
-                int columnNumber = 0;
-                try {
-                    //метод подсчета строк
-                    columnNumber = getColumnsGeometryNumber(lbExcel.getText());
+                // int columnNumber = 0;
+                // try {
+                //     //метод подсчета строк
+                //     columnNumber = getColumnsGeometryNumber(lbExcel.getText());
 
-                } catch (IOException | InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
+                // } catch (IOException | InterruptedException ex) {
+                //     throw new RuntimeException(ex);
+                // }
 
-                JOptionPane.showMessageDialog(
-                        null, Integer.toString(columnNumber)
-                );
+                // JOptionPane.showMessageDialog(
+                //         null, Integer.toString(columnNumber)
+                // );
 
-                // основной цикл работы
-                for(int i = 0; i < columnNumber;i++){
-                        int repeatRow = 0;
-                        try {
-                                // проверка на повторение геометрии
-                                repeatRow = repeatGeometryCheck(EXCEL_START_ROW+i,lbExcel.getText());
+                // // основной цикл работы
+                // for(int i = 0; i < columnNumber;i++){
+                //         int repeatRow = 0;
+                //         try {
+                //                 // проверка на повторение геометрии
+                //                 repeatRow = repeatGeometryCheck(EXCEL_START_ROW+i,lbExcel.getText());
 
-                                JOptionPane.showMessageDialog(
-                                        null, repeatRow+""
-                                );
-                        } 
-                        catch (IOException | InterruptedException ex) {
-                                throw new RuntimeException(ex);
-                        }
+                //                 JOptionPane.showMessageDialog(
+                //                         null, repeatRow+""
+                //                 );
+                //         } 
+                //         catch (IOException | InterruptedException ex) {
+                //                 throw new RuntimeException(ex);
+                //         }
 
-                        if(repeatRow == 0){
-                           isGeometryChange()
-                        }
-                        else{
-                           isGeometryDontChange()
-                        }
-                }
+                //         if(repeatRow == 0){
+                //            isGeometryChange()
+                //         }
+                //         else{
+                //            isGeometryDontChange()
+                //         }
+                // }
 
                 // методы работы в Star CCM+
                 
@@ -1217,9 +1237,9 @@ private static int EXCEL_START_COLL;
 
         //        setStoppingCriterion(7000);
 
-                JOptionPane.showMessageDialog(
-                        null, "Complete!"
-                );
+                // JOptionPane.showMessageDialog(
+                //         null, "Complete!"
+                // );
             }
         });
 
