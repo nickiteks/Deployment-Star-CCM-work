@@ -63,11 +63,52 @@ private static  String THERMO30_PATH;
 private static  String TRANSPORT_PATH;
 private static int EXCEL_START_ROW;
 private static int EXCEL_START_COLL;
+private static String EXCEL_PATH;
+private static String GEOMETRY_PATH;
+
+
 
     public void execute() {
 
-        getConfigData("C:\\Users\\NULS\\Desktop\\folder\\config.ini");
         formChoose();
+
+        getConfigData("C:\\Users\\NULS\\Desktop\\folder\\config.ini");
+
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        
+        //количество строк в ексель файле
+        int columnNumber = 0;
+        try {
+            //метод подсчета строк
+            columnNumber = getColumnsGeometryNumber(EXCEL_PATH);
+
+        } catch (IOException | InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        // // основной цикл работы
+        for(int i = 0; i < columnNumber;i++){
+                int repeatRow = 0;
+                try {
+                        // проверка на повторение геометрии
+                        repeatRow = repeatGeometryCheck(EXCEL_START_ROW+i,EXCEL_PATH);
+                } 
+                catch (IOException | InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                }
+
+                if(repeatRow == 0){
+                   //isGeometryChange();
+                   Simulation simulation_0 = new Simulation("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
+                }
+                else{
+                   //isGeometryDontChange();
+                }
+        }
     }
 
     private void importGeometry() {
@@ -1157,6 +1198,10 @@ private static int EXCEL_START_COLL;
         btnOK.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                
+
+                EXCEL_PATH = lbExcel.getText();
+                GEOMETRY_PATH = lbGeometry.getText();
 
                 frame.dispose();
 
@@ -1167,7 +1212,7 @@ private static int EXCEL_START_COLL;
                 
                 //Simulation sim=getActiveSimulation();
 
-                Simulation sim = new Simulation("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
+                // Simulation simulation_0 = new Simulation("C:\\Users\\NULS\\Desktop\\xhtym\\work\\gb_8.sim");
                 
                 //sim.close(ServerConnection.CloseOption.Close);
 
@@ -1257,7 +1302,6 @@ private static int EXCEL_START_COLL;
         jpMainPannel.add(jpOK);
 
         frame.add(jpMainPannel);
-
 
         frame.setMinimumSize(new Dimension(500,200));
         frame.setVisible(true);
